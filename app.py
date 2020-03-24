@@ -4,9 +4,9 @@ from flask import Flask, request, jsonify
 import os 
 import json
 from multiprocessing import Process, Queue
-from bert_qa.bert_client import Client
+from bert-client.bert_client import Client
 import uuid
-from bert_qa.run_squad import process_inputs
+from bert-client.run_squad import process_inputs
 
 app = Flask(__name__) 
 
