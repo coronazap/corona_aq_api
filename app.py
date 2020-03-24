@@ -6,7 +6,7 @@ import json
 from multiprocessing import Process, Queue
 from bert.bert_client import Client
 import uuid
-from bert.run_squad import process_inputs
+from bert_qa.run_squad import process_inputs
 
 app = Flask(__name__) 
 
