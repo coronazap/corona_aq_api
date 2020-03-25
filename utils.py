@@ -1,7 +1,8 @@
-#from bert_serving.client import BertClient
-#import numpy as np
+from bert_serving.client import BertClient
+import numpy as np
 import json
 import time
+from sentence_transformers import models, SentenceTransformer
 
 category_to_number = {
     'prevencao': 0,
@@ -17,6 +18,14 @@ number_to_category = {
     3: 'tratamento'
 }
 
+word_embedding_model = models.BERT('./bert_model')
+
+pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(),
+                               pooling_mode_mean_tokens=True,
+                               pooling_mode_cls_token=False,
+                               pooling_mode_max_tokens=False)
+
+bert_model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
 
 def get_categories_questions():
     '''
@@ -34,7 +43,6 @@ def get_categories_questions():
         
         pre_list = []
         for item in data:
-            print(item)
             pre_list.append(item['qas'])
 
         questions = []
@@ -46,12 +54,10 @@ def get_categories_questions():
         
         results[number_to_category[index]] = questions
 
-    print(results)
-
     return results
 
 
-def get_context_dict(): 
+def get_context_dict(category): 
     ''' 
         Retorna um dicionário mapeando contextos à uma lista perguntas
     '''
@@ -60,7 +66,7 @@ def get_context_dict():
         dataset = json.load(train_file)
         
     for index, item in enumerate(dataset["data"]): 
-        data = dataset["data"][index]['paragraphs']
+        data = dataset["data"][category_to_number[category]]['paragraphs']
         
 
     context_to_questions = {}
@@ -72,23 +78,26 @@ def get_context_dict():
             
     return context_to_questions
 
-context_to_questions = get_context_dict()
-category_to_questions = get_categories_questions()
 
 def get_similarity(category, question):
-
     # Ambos virão da request
     # Inicialização de variáveis
-    bc = BertClient(port=5555, port_out=5556)
-    json.dumps(bc.server_status, ensure_ascii=False)
+    #json.dumps(bc.server_status, ensure_ascii=Fals   
     topk = 3
-    query_vec = bc.encode([question])[0]
+    
+    query_vec = bert_model.encode([question])[0]
 
     # "tópico" e "query" vão chegar pela request
 
+    category_to_questions = get_categories_questions()
+
     questions = category_to_questions[category]
 
-    doc_vecs = bc.encode(questions)
+
+    context_to_questions = get_context_dict(category)
+
+
+    doc_vecs = bert_model.encode(questions)
 
 
     # Caso seja apenas a pergunta #1 (top pergunta)
@@ -96,6 +105,7 @@ def get_similarity(category, question):
     if topk == 1:
         score = np.sum(query_vec * doc_vecs, axis=1) / np.linalg.norm(doc_vecs, axis=1)
         topk_idx = np.argsort(score)[::-1][:topk]
+        
         topQuestion = questions[max(topk_idx)]
 
         for key in context_to_questions.keys():
@@ -109,6 +119,7 @@ def get_similarity(category, question):
     #-------------------------------------------------------
     if topk > 1:
         score = np.sum(query_vec * doc_vecs, axis=1) / np.linalg.norm(doc_vecs, axis=1)
+
         topk_idx = np.argsort(score)[::-1][:topk]
         topQuestions = []
         # contexts = set()
@@ -116,16 +127,19 @@ def get_similarity(category, question):
 
         for idx in topk_idx:
             topQuestions.append(questions[idx])
-
+        print(' ')
+        print('Real question: ')
+        print(question)
+        print('Similar questions')
+        print(topQuestions)
+        print(' ')
         for key in context_to_questions.keys():
-            
             for topQuestion in topQuestions:
-                
                 if topQuestion in context_to_questions[key]:
                     contexts.append(key)
-                                        
+                    
         context = max(set(contexts), key=contexts.count)
-        return format(context)
+        return context
                 
         # print("Número de contextos únicos encontrados: {}".format(contexts))
         # print("Número de contextos: {}".format(len(contexts)))

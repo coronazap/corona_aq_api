@@ -8,19 +8,32 @@ from bert_client.main import Client
 import uuid
 from bert_client.run_squad import process_inputs
 import time 
+from utils import get_similarity
 
 app = Flask(__name__) 
 
 hostport =  os.getenv('BERT_HOSTPORT')
+
+global client 
 
 client = Client(hostport)
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
 
-    
     data = request.get_json()
-   
+
+    context = ''
+
+    context = get_similarity(data["category"], data["question"])
+    
+    print(' ')
+    print('Question:')
+    print(data['question'])
+    print('Chosen context:')
+    print(context)
+    print(' ')
+    
     input_data = {
         "version": "1,1",
         "data": [
@@ -30,12 +43,12 @@ def predict():
                     {
                         "qas": [
                             {
-                                "question": "Como se da a transmissao do COVID0-19?",
+                                "question": data["question"],
                                 "id": str(uuid.uuid1()),
                                 "is_impossible": ""
                             },
                         ],
-                        "context": "As investigações sobre as formas de transmissão do coronavírus ainda estão em andamento, mas a disseminação de pessoa para pessoa, ou seja, a contaminação por gotículas respiratórias ou contato, está ocorrendo. Qualquer pessoa que tenha contato próximo (cerca de 1m) com alguém com sintomas respiratórios está em risco de ser exposta à infecção. A transmissão dos coronavírus costuma ocorrer pelo ar ou por contato pessoal com secreções contaminadas, como: gotículas de saliva; espirro; tosse; catarro; contato pessoal próximo, como toque ou aperto de mão; contato com objetos ou superfícies contaminadas, seguido de contato com a boca, nariz ou olhos."
+                        "context": context
                     }
                 ]
             }
@@ -44,7 +57,15 @@ def predict():
 
     results = client.predict(input_data)
 
-    return jsonify(results)
+    n_best_predictions = json.loads(results)[0]['n_best_predictions']
+
+    answers = []
+
+    for answer in n_best_predictions:
+            answers.append(answer['text']) 
+
+    return str(answers)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
