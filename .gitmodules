@@ -1,0 +1,3 @@
+[submodule "bert_client"]
+	path = bert_client
+	url = https://github.com/coronazap/bert_client
