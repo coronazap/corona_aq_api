@@ -1,5 +1,5 @@
-from bert_serving.client import BertClient
-import numpy as np
+#from bert_serving.client import BertClient
+#import numpy as np
 import json
 import time
 
@@ -18,20 +18,75 @@ number_to_category = {
 }
 
 
+def get_categories_questions():
+    '''
+        Retorna uma lista de perguntas 
+    '''
+
+    with open("./covid-final-train.json") as file:
+        dataset = json.load(file)
+
+
+    results = {}
+
+    for index, item in enumerate(dataset["data"]): 
+        data = dataset["data"][index]['paragraphs']
+        
+        pre_list = []
+        for item in data:
+            print(item)
+            pre_list.append(item['qas'])
+
+        questions = []
+
+        for i in range(len(pre_list)):
+            for j in range(len(pre_list[i])):
+                questions.append(pre_list[i][j]['question'])
+
+        
+        results[number_to_category[index]] = questions
+
+    print(results)
+
+    return results
+
+
+def get_context_dict(): 
+    ''' 
+        Retorna um dicionário mapeando contextos à uma lista perguntas
+    '''
+
+    with open("./covid-final-train.json") as train_file:
+        dataset = json.load(train_file)
+        
+    for index, item in enumerate(dataset["data"]): 
+        data = dataset["data"][index]['paragraphs']
+        
+
+    context_to_questions = {}
+    
+    for i in range(len(data)):
+        context_to_questions[data[i]['context']] = []
+        for j in range(len(data[i]['qas'])):
+            context_to_questions[data[i]['context']].append(data[i]['qas'][j]['question'])
+            
+    return context_to_questions
+
+context_to_questions = get_context_dict()
+category_to_questions = get_categories_questions()
+
 def get_similarity(category, question):
 
-    context_to_questions = get_context_dict()
-    category_to_questions = get_category_questions()
-    
     # Ambos virão da request
     # Inicialização de variáveis
     bc = BertClient(port=5555, port_out=5556)
+    json.dumps(bc.server_status, ensure_ascii=False)
     topk = 3
-    query_vec = bc.encode([query])[0]
+    query_vec = bc.encode([question])[0]
 
     # "tópico" e "query" vão chegar pela request
 
-    questions = get_category_questions(category)
+    questions = category_to_questions[category]
 
     doc_vecs = bc.encode(questions)
 
@@ -43,8 +98,8 @@ def get_similarity(category, question):
         topk_idx = np.argsort(score)[::-1][:topk]
         topQuestion = questions[max(topk_idx)]
 
-        for key in contextDict.keys():
-            if topQuestion in contextDict[key]:
+        for key in context_to_questions.keys():
+            if topQuestion in context_to_questions[key]:
                 context = key
                 return format(context)
     #------------------------------------------------------
@@ -62,11 +117,11 @@ def get_similarity(category, question):
         for idx in topk_idx:
             topQuestions.append(questions[idx])
 
-        for key in contextDict.keys():
+        for key in context_to_questions.keys():
             
             for topQuestion in topQuestions:
                 
-                if topQuestion in contextDict[key]:
+                if topQuestion in context_to_questions[key]:
                     contexts.append(key)
                                         
         context = max(set(contexts), key=contexts.count)
@@ -75,52 +130,3 @@ def get_similarity(category, question):
         # print("Número de contextos únicos encontrados: {}".format(contexts))
         # print("Número de contextos: {}".format(len(contexts)))
 
-
-def get_categories_questions():
-    '''
-        Retorna uma lista de perguntas 
-    '''
-
-    with open("./covid-train2.json") as file:
-        dataset = json.load(file)
-
-    data = dataset["data"][category_to_number[category]]
-
-    results = {}
-
-    for index, item in enumerate(dataset["data"]): 
-
-        pre_list = []
-        for item in data:
-            pre_list.append(item['qas'])
-
-        questions = []
-
-        for i in range(len(pre_list)):
-            for j in range(len(pre_list[i])):
-                questions.append(pre_list[i][j]['question'])
-
-        
-        result[number_to_category[i]] = questions
-
-    return results
-
-
-def get_context_dict(): 
-    ''' 
-        Retorna um dicionário mapeando contextos à uma lista perguntas
-    '''
-
-    with open("./covid-train2.json") as train_file:
-        dataset = json.load(train_file)
-
-    data = dataset['data'][category_to_number[category]]['paragraphs']
-
-    context_to_questions = {}
-    
-    for i in range(len(data)):
-        context_to_questions[data[i]['context']] = []
-        for j in range(len(data[i]['qas'])):
-            context_to_questions[data[i]['context']].append(data[i]['qas'][j]['question'])
-
-    return context_to_questions
