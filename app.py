@@ -20,6 +20,7 @@ def predict():
     data = request.get_json()
     
     input_data = {
+        "version": "1,1",
         "data": [
             {
                 "title": data['category'],
@@ -27,13 +28,13 @@ def predict():
                     {
                         "qas": [
                             {
-                                "question": data['question'],
+                                "question": "Como se da a transmissao do COVID0-19?",
                                 "id": str(uuid.uuid1()),
                                 "is_impossible": ""
                             },
-
                         ],
-                        "context": data['context']}
+                        "context": "As investigações sobre as formas de transmissão do coronavírus ainda estão em andamento, mas a disseminação de pessoa para pessoa, ou seja, a contaminação por gotículas respiratórias ou contato, está ocorrendo. Qualquer pessoa que tenha contato próximo (cerca de 1m) com alguém com sintomas respiratórios está em risco de ser exposta à infecção. A transmissão dos coronavírus costuma ocorrer pelo ar ou por contato pessoal com secreções contaminadas, como: gotículas de saliva; espirro; tosse; catarro; contato pessoal próximo, como toque ou aperto de mão; contato com objetos ou superfícies contaminadas, seguido de contato com a boca, nariz ou olhos."
+                    }
                 ]
             }
         ]
@@ -42,12 +43,6 @@ def predict():
     results = client.predict(input_data)
 
     return jsonify(results)
-
-
-@app.route('/api/similarity', methods=['POST']) 
-def get_context(): 
-
-    pass
 
 if __name__ == '__main__':
     app.run(debug=True)
