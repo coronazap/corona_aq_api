@@ -4,24 +4,25 @@ import json
 import time
 
 category_to_number = {
-    'prevencao' = 0,
-    'sintomas' = 1,
-    'transmissao' = 2,
-    'tratamento' = 3
+    'prevencao': 0,
+    'sintomas': 1,
+    'transmissao': 2,
+    'tratamento': 3
 }
 
 number_to_category = {
-    0 = 'prevencao',
-    1 = 'sintomas',
-    2 = 'transmissao', 
-    3 = 'tratamento'
+    0: 'prevencao',
+    1: 'sintomas',
+    2: 'transmissao', 
+    3: 'tratamento'
 }
 
-context_to_questions = get_context_dict()
-
-category_to_questions = get_category_questions()
 
 def get_similarity(category, question):
+
+    context_to_questions = get_context_dict()
+    category_to_questions = get_category_questions()
+    
     # Ambos virão da request
     # Inicialização de variáveis
     bc = BertClient(port=5555, port_out=5556)
@@ -122,4 +123,4 @@ def get_context_dict():
         for j in range(len(data[i]['qas'])):
             context_to_questions[data[i]['context']].append(data[i]['qas'][j]['question'])
 
-   return context_to_questions
+    return context_to_questions

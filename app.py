@@ -7,6 +7,8 @@ from multiprocessing import Process, Queue
 from bert_client.main import Client
 import uuid
 from bert_client.run_squad import process_inputs
+import time 
+from utils import get_similarity
 
 app = Flask(__name__) 
 
@@ -17,8 +19,11 @@ client = Client(hostport)
 @app.route('/api/predict', methods=['POST'])
 def predict():
 
-    data = request.get_json()
     
+    data = request.get_json()
+
+    get_similarity(data['question'], data['category'])
+   
     input_data = {
         "version": "1,1",
         "data": [
