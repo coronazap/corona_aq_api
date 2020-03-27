@@ -1,0 +1,1 @@
+!gsutil cp -r gs://covid-bucket2 ./bert_model 
