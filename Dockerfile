@@ -1,4 +1,6 @@
 FROM python:3.6
-WORKDIR . 
-RUN pip3 install -r requirements.txt 
-CMD python app.py 
+ADD . /app 
+WORKDIR /app 
+RUN pip3 install -r requirements.txt
+RUN python download.py
+CMD python /app/app.py 
