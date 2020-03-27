@@ -18,7 +18,7 @@ number_to_category = {
     3: 'tratamento'
 }
 
-word_embedding_model = models.BERT('./bert_model')
+word_embedding_model = models.BERT('./app/bert_model')
 
 pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(),
                                pooling_mode_mean_tokens=True,
@@ -32,7 +32,7 @@ def get_categories_questions():
         Retorna uma lista de perguntas 
     '''
 
-    with open("./covid-final-train.json") as file:
+    with open("./app/covid-final-train.json") as file:
         dataset = json.load(file)
 
 
@@ -62,7 +62,7 @@ def get_context_dict(category):
         Retorna um dicionário mapeando contextos à uma lista perguntas
     '''
 
-    with open("./covid-final-train.json") as train_file:
+    with open("./app/covid-final-train.json") as train_file:
         dataset = json.load(train_file)
         
     for index, item in enumerate(dataset["data"]): 

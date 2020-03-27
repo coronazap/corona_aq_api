@@ -1,0 +1,124 @@
+{
+    "77899aa8-6ed9-11ea-98b3-74dfbf948969": [
+        {
+            "text": "Os sintomas mais comuns s\u00e3o febre, fadiga e tosse seca.",
+            "probability": 0.6067138100841176,
+            "start_logit": 6.5514984130859375,
+            "end_logit": 1.3984843492507935
+        },
+        {
+            "text": "gradualmente",
+            "probability": 0.20428324039106113,
+            "start_logit": -1.6904516220092773,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": "gradualmente.",
+            "probability": 0.06260304898221673,
+            "start_logit": -1.6904516220092773,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "Esses sintomas s\u00e3o geralmente leves e come\u00e7am gradualmente",
+            "probability": 0.02130913340412562,
+            "start_logit": -3.9508233070373535,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": "geralmente leves e come\u00e7am gradualmente",
+            "probability": 0.01980310523293591,
+            "start_logit": -4.024120330810547,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": ".",
+            "probability": 0.018599588139160145,
+            "start_logit": -2.9041261672973633,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "s\u00e3o geralmente leves e come\u00e7am gradualmente",
+            "probability": 0.016947881489214958,
+            "start_logit": -4.179816246032715,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": "Os",
+            "probability": 0.008575640177422381,
+            "start_logit": 6.5514984130859375,
+            "end_logit": -2.860647201538086
+        },
+        {
+            "text": "leves e come\u00e7am gradualmente",
+            "probability": 0.006565503024972071,
+            "start_logit": -5.128129959106445,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": "Esses sintomas s\u00e3o geralmente leves e come\u00e7am gradualmente.",
+            "probability": 0.006530230868246201,
+            "start_logit": -3.9508233070373535,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "come\u00e7am gradualmente",
+            "probability": 0.006159710291249974,
+            "start_logit": -5.191929340362549,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": "geralmente leves e come\u00e7am gradualmente.",
+            "probability": 0.0060687052179329275,
+            "start_logit": -4.024120330810547,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "s\u00e3o geralmente leves e come\u00e7am gradualmente.",
+            "probability": 0.0051937156126125065,
+            "start_logit": -4.179816246032715,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "sintomas s\u00e3o geralmente leves e come\u00e7am gradualmente",
+            "probability": 0.003566362715107867,
+            "start_logit": -5.738412857055664,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": "leves e come\u00e7am gradualmente.",
+            "probability": 0.002012012863504606,
+            "start_logit": -5.128129959106445,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "come\u00e7am gradualmente.",
+            "probability": 0.0018876567864363099,
+            "start_logit": -5.191929340362549,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "e come\u00e7am gradualmente",
+            "probability": 0.0014249725419356683,
+            "start_logit": -6.655806541442871,
+            "end_logit": 8.551884651184082
+        },
+        {
+            "text": "sintomas s\u00e3o geralmente leves e come\u00e7am gradualmente.",
+            "probability": 0.001092919709491835,
+            "start_logit": -5.738412857055664,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "e come\u00e7am gradualmente.",
+            "probability": 0.0004366859741912338,
+            "start_logit": -6.655806541442871,
+            "end_logit": 7.3691911697387695
+        },
+        {
+            "text": "Os sintomas mais comuns",
+            "probability": 0.00022607649406440497,
+            "start_logit": 6.5514984130859375,
+            "end_logit": -6.49645471572876
+        }
+    ]
+}
