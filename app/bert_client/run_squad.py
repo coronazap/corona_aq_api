@@ -51,7 +51,7 @@ flags.DEFINE_string("train_file", None,
                     "SQuAD json for training. E.g., train-v1.1.json")
 
 flags.DEFINE_string(
-    "predict_file", './test-file.json',
+    "predict_file", './app/test-file.json',
     "SQuAD json for predictions. E.g., dev-v1.1.json or test-v1.1.json")
 
 flags.DEFINE_string(
@@ -177,7 +177,7 @@ def process_inputs():
         vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
 
     eval_writer = FeatureWriter(
-        filename="eval.tf_record",
+        filename="./app/eval.tf_record",
         is_training=False)
 
     eval_features = []
