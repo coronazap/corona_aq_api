@@ -64,7 +64,7 @@ def predict():
             answers.append(answer['text']) 
 
     print(' ')
-    print('Resposta: ' + answers[0])
+    print('Resposta: ' + str(answers))
 
     return str(answers)
 
