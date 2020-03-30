@@ -15,22 +15,33 @@ app = Flask(__name__)
 hostport =  os.getenv('BERT_HOSTPORT')
 
 global client 
+global contexts 
+
+contexts = {}
+
+with open('./app/covid-final-train.json') as contexts_file: 
+    contexts['prevencao'] = contexts_file['data'][0]['paragraphs'][0]['context']
+    contexts['sintomas'] = contexts_file['data'][1]['paragraphs'][0]['context']
+    contexts['transmissao'] = contexts_file['data'][2]['paragraphs'][0]['context']
+    contexts['tratamento'] = contexts_file['data'][3]['paragraphs'][0]['context']
 
 client = Client(hostport)
+
+
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
 
     data = request.get_json()
 
-    context = ''
+    context = contexts[question['category']
 
-    context = get_similarity(data["category"], data["question"])
+    # context = get_similarity(data["category"], data["question"])
     
     print(' ')
     print('Question: ' + data['question'])
     print(' ')
-    print('Chosen context: ' + context)
+    print('Chosen context: ' + context])
     print(' ')
     
     input_data = {
