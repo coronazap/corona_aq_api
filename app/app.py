@@ -8,40 +8,40 @@ from bert_client.main import Client
 import uuid
 from bert_client.run_squad import process_inputs
 import time 
-from utils import get_similarity
+# from utils import get_similarity
 
 app = Flask(__name__) 
 
 hostport =  os.getenv('BERT_HOSTPORT')
 
 global client 
-global contexts 
+client = Client(hostport)
 
+global contexts 
 contexts = {}
 
 with open('./app/covid-final-train.json') as contexts_file: 
-    contexts['prevencao'] = contexts_file['data'][0]['paragraphs'][0]['context']
-    contexts['sintomas'] = contexts_file['data'][1]['paragraphs'][0]['context']
-    contexts['transmissao'] = contexts_file['data'][2]['paragraphs'][0]['context']
-    contexts['tratamento'] = contexts_file['data'][3]['paragraphs'][0]['context']
+    contexts_data = json.load(contexts_file)
+    contexts['prevencao'] = contexts_data['data'][0]['paragraphs'][0]['context']
+    contexts['sintomas'] = contexts_data['data'][1]['paragraphs'][0]['context']
+    contexts['transmissao'] = contexts_data['data'][2]['paragraphs'][0]['context']
+    contexts['tratamento'] = contexts_data['data'][3]['paragraphs'][0]['context']
 
-client = Client(hostport)
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
 
+
     data = request.get_json()
 
-    context = contexts[question['category']]
+    context = contexts[data['category']]
+    _id = str(uuid.uuid1())
 
     # context = get_similarity(data["category"], data["question"])
-    
-    print(' ')
-    print('Question: ' + data['question'])
-    print(' ')
-    print('Chosen context: ' + context])
-    print(' ')
-    
+
+    os.mkdir('./app/results/{}'.format(_id))
+    os.mkdir('./app/inputs/{}'.format(_id))
+        
     input_data = {
         "version": "1,1",
         "data": [
@@ -52,7 +52,7 @@ def predict():
                         "qas": [
                             {
                                 "question": data["question"],
-                                "id": str(uuid.uuid1()),
+                                "id": _id,
                                 "is_impossible": ""
                             },
                         ],
@@ -63,7 +63,7 @@ def predict():
         ]
     }
 
-    results = client.predict(input_data)
+    results = client.predict(input_data, _id)
 
     n_best_predictions = json.loads(results)[0]['n_best_predictions']
 
@@ -72,10 +72,9 @@ def predict():
     for answer in n_best_predictions:
             answers.append(answer['text']) 
 
-    print(' ')
-    print('Resposta: ' + str(answers))
-
-    return str(answers)
+    return {
+        'answer': str(answers[0]).capitalize()
+    }
 
 
 if __name__ == '__main__':

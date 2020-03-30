@@ -127,12 +127,7 @@ def get_similarity(category, question):
 
         for idx in topk_idx:
             topQuestions.append(questions[idx])
-        print(' ')
-        print('Real question: ')
-        print(question)
-        print('Similar questions')
-        print(topQuestions)
-        print(' ')
+            
         for key in context_to_questions.keys():
             for topQuestion in topQuestions:
                 if topQuestion in context_to_questions[key]:

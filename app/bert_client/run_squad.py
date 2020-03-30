@@ -41,19 +41,6 @@ flags.DEFINE_string(
 flags.DEFINE_string("vocab_file", './app/bert_client/vocab.txt',
                     "The vocabulary file that the BERT model was trained on.")
 
-# '../predictions'
-flags.DEFINE_string(
-    "output_dir", '../covid-output',
-    "The output directory where the model checkpoints will be written.")
-
-# Other parameters
-flags.DEFINE_string("train_file", None,
-                    "SQuAD json for training. E.g., train-v1.1.json")
-
-flags.DEFINE_string(
-    "predict_file", './app/test-file.json',
-    "SQuAD json for predictions. E.g., dev-v1.1.json or test-v1.1.json")
-
 flags.DEFINE_string(
     "init_checkpoint", '../covid-output/model.ckpt-23',
     "Initial checkpoint (usually from a pre-trained BERT model).")
@@ -79,31 +66,8 @@ flags.DEFINE_integer(
     "The maximum number of tokens for the question. Questions longer than "
     "this will be truncated to this length.")
 
-flags.DEFINE_bool("do_train", False, "Whether to run training.")
-
-flags.DEFINE_bool("do_predict", False, "Whether to run eval on the dev set.")
-
-flags.DEFINE_integer("train_batch_size", 32, "Total batch size for training.")
-
 flags.DEFINE_integer("predict_batch_size", 8,
                      "Total batch size for predictions.")
-
-flags.DEFINE_float("learning_rate", 5e-5,
-                   "The initial learning rate for Adam.")
-
-flags.DEFINE_float("num_train_epochs", 3.0,
-                   "Total number of training epochs to perform.")
-
-flags.DEFINE_float(
-    "warmup_proportion", 0.1,
-    "Proportion of training to perform linear learning rate warmup for. "
-    "E.g., 0.1 = 10% of training.")
-
-flags.DEFINE_integer("save_checkpoints_steps", 1000,
-                     "How often to save the model checkpoint.")
-
-flags.DEFINE_integer("iterations_per_loop", 1000,
-                     "How many steps to make in each estimator call.")
 
 flags.DEFINE_integer(
     "n_best_size", 20,
@@ -115,37 +79,10 @@ flags.DEFINE_bool(
     "Defines "
     "nbest_predictions.json output file.")
 
-
 flags.DEFINE_integer(
     "max_answer_length", 30,
     "The maximum length of an answer that can be generated. This is needed "
     "because the start and end predictions are not conditioned on one another.")
-
-flags.DEFINE_bool("use_tpu", False, "Whether to use TPU or GPU/CPU.")
-
-tf.flags.DEFINE_string(
-    "tpu_name", None,
-    "The Cloud TPU to use for training. This should be either the name "
-    "used when creating the Cloud TPU, or a grpc://ip.address.of.tpu:8470 "
-    "url.")
-
-tf.flags.DEFINE_string(
-    "tpu_zone", None,
-    "[Optional] GCE zone where the Cloud TPU is located in. If not "
-    "specified, we will attempt to automatically detect the GCE project from "
-    "metadata.")
-
-tf.flags.DEFINE_string(
-    "gcp_project", None,
-    "[Optional] Project name for the Cloud TPU-enabled project. If not "
-    "specified, we will attempt to automatically detect the GCE project from "
-    "metadata.")
-
-tf.flags.DEFINE_string("master", None, "[Optional] TensorFlow master URL.")
-
-flags.DEFINE_integer(
-    "num_tpu_cores", 8,
-    "Only used if `use_tpu` is True. Total number of TPU cores to use.")
 
 flags.DEFINE_bool(
     "verbose_logging", False,
@@ -159,25 +96,19 @@ flags.DEFINE_bool(
 flags.DEFINE_float(
     "null_score_diff_threshold", 0.0,
     "If null_score - best_non_null is greater than the threshold predict null.")
-########################################################################################
-flags.DEFINE_bool("do_export", True, "Whether to run training.")
-
-flags.DEFINE_string(
-    "export_dir", '../exported_model',
-    "The output directory where the model pb will be written.")
-# 3
+    
 
 
-def process_inputs():
+def process_inputs(_id):
     eval_examples = read_squad_examples(
-        input_file=FLAGS.predict_file, is_training=False)
+        input_file='./app/inputs/{}/input.json'.format(_id), is_training=False)
 
 
     tokenizer = tokenization.FullTokenizer(
         vocab_file=FLAGS.vocab_file, do_lower_case=FLAGS.do_lower_case)
 
     eval_writer = FeatureWriter(
-        filename="./app/eval.tf_record",
+        filename="./app/inputs/{}/eval.tf_record".format(_id),
         is_training=False)
 
     eval_features = []
@@ -220,7 +151,8 @@ def process_result(result):
 def process_output(all_results,
                    eval_examples,
                    eval_features,
-                   input_data):
+                   input_data,
+                   _id):
 
     all_predictions, all_nbest_json = write_predictions(
         eval_examples,
@@ -228,7 +160,7 @@ def process_output(all_results,
         all_results,
         FLAGS.n_best_size,
         FLAGS.max_answer_length,
-        False, './app/results/predictions.json', './app/results/nbest_predictions.json', './app/results/null_odds.json')
+        False, './app/results/{}/predictions.json'.format(_id), './app/results/{}/n_best_predictions.json'.format(_id), './app/results/{}/null_odds.json'.format(_id))
 
     questions = input_data["data"][0]["paragraphs"][0]["qas"]
 
@@ -575,7 +507,7 @@ def convert_examples_to_features(examples, tokenizer, max_seq_length,
             unique_id += 1
 
 
-def _improve_answer_span(doc_tokens, input_start, input_end, tokenizer,
+def verbose_logging(doc_tokens, input_start, input_end, tokenizer,
                          orig_answer_text):
     """Returns tokenized answer spans that better match the annotated answer."""
 
