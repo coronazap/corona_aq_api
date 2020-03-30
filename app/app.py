@@ -28,10 +28,9 @@ def predict():
     context = get_similarity(data["category"], data["question"])
     
     print(' ')
-    print('Question:')
-    print(data['question'])
-    print('Chosen context:')
-    print(context)
+    print('Question: ' + data['question'])
+    print(' ')
+    print('Chosen context: ' + context)
     print(' ')
     
     input_data = {
@@ -63,6 +62,9 @@ def predict():
 
     for answer in n_best_predictions:
             answers.append(answer['text']) 
+
+    print(' ')
+    print('Resposta: ' + answers[0])
 
     return str(answers)
 
