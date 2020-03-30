@@ -27,14 +27,12 @@ with open('./app/covid-final-train.json') as contexts_file:
 
 client = Client(hostport)
 
-
-
 @app.route('/api/predict', methods=['POST'])
 def predict():
 
     data = request.get_json()
 
-    context = contexts[question['category']
+    context = contexts[question['category']]
 
     # context = get_similarity(data["category"], data["question"])
     
